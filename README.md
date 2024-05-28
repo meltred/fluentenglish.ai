@@ -17,7 +17,7 @@ After cloning the repo go to root directory.
 cp format.env .env.local
 ```
 
-Fill the `.env.local` with the values
+Fill the `.env.local` with the values. For Hume api key and secret click [here](https://beta.hume.ai/settings/keys).
 
 ```bash
 pnpm install
