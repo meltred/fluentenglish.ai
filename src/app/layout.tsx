@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { getMetadata } from "@/lib/metadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "FluentEnglish.AI",
-  description: "An AI native application for non-native English learners.",
-};
+export const metadata: Metadata = getMetadata();
 
 export default function RootLayout({
   children,
