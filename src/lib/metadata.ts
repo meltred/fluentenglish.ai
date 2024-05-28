@@ -25,12 +25,11 @@ export function getMetadata(): Metadata {
     openGraph: {
       title: "FluentEnglish.AI",
       description: "An AI native application for non-native English learners.",
-      url: "https://fluentenglish.ai",
+      url: "https://FluentEnglish.ai",
       siteName: "FluentEnglish.AI",
       images: [
         {
-          // todo: remove this with own image /og.jpeg
-          url: "https://i.imgur.com/2wB1GqB.jpeg",
+          url: "/og.jpeg",
           width: 1200,
           height: 630,
         },
@@ -63,11 +62,11 @@ export function getMetadata(): Metadata {
       title: "FluentEnglish.AI",
       description: "An AI native application for non-native English learners.",
       siteId: "fluentenglish_ai",
-      creator: "@fluentenglishai",
-      creatorId: "fluentenglishai",
+      creator: "@fluentenglish_ai",
+      creatorId: "fluentenglish_ai",
       images: {
-        url: "https://i.imgur.com/2wB1GqB.jpeg",
-        alt: "A gradient background with noise and website description written at the bottom left",
+        url: "/og.jpeg",
+        alt: "A gradient background website description written at the bottom left",
       },
     },
     verification: {
@@ -75,7 +74,7 @@ export function getMetadata(): Metadata {
 
       yandex: "Ey7X4/zlbWtObK3I",
       yahoo: "yahoo",
-      other: { me: ["kunal@kunalsin9h.com"] },
+      other: { me: ["help@fluentenglish.ai"] },
     },
     alternates: {
       canonical: "https://fluentenglish.ai",
