@@ -1,7 +1,19 @@
-export default function Home() {
+import Demo from "@/components/Demo";
+import { fetchAccessToken } from "@humeai/voice";
+
+export default async function Home() {
+  const accessToken = await fetchAccessToken({
+    apiKey: String(process.env.HUME_API_KEY),
+    clientSecret: String(process.env.HUME_CLIENT_SECRET),
+  });
+
+  if (!accessToken) {
+    throw new Error();
+  }
+
   return (
     <main>
-      <p>Hello</p>
+      <Demo humeAccessToken={accessToken} />
     </main>
   );
 }

@@ -21,7 +21,6 @@ export function getMetadata(): Metadata {
       "writing emails",
     ],
     authors: [{ name: "Meltred Pvt Ltd.", url: "https://meltred.com" }],
-    colorScheme: "dark",
     openGraph: {
       title: "FluentEnglish.AI",
       description: "An AI native application for non-native English learners.",
@@ -53,10 +52,6 @@ export function getMetadata(): Metadata {
       icon: "/favicon.ico",
       shortcut: "/favicon.ico",
     },
-    themeColor: [
-      { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-      { media: "(prefers-color-scheme: dark)", color: "#000000" },
-    ],
     twitter: {
       card: "summary_large_image",
       title: "FluentEnglish.AI",
