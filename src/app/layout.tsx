@@ -14,12 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="relative w-full">
-          <div className="absolute inset-0 bg-gradient from-color-blue-400 to-color-ping-300 opacity-25"></div>
-          <div className="relative">{children}</div>
-        </div>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
