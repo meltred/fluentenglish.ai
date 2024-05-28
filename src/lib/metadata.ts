@@ -29,7 +29,7 @@ export function getMetadata(): Metadata {
       siteName: "FluentEnglish.AI",
       images: [
         {
-          url: "/og.jpeg",
+          url: "https://i.imgur.com/ircGJBP.jpeg",
           width: 1200,
           height: 630,
         },
@@ -65,7 +65,7 @@ export function getMetadata(): Metadata {
       creator: "@fluentenglish_ai",
       creatorId: "fluentenglish_ai",
       images: {
-        url: "/og.jpeg",
+        url: "https://i.imgur.com/ircGJBP.jpeg",
         alt: "A gradient background website description written at the bottom left",
       },
     },
