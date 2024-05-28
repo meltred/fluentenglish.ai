@@ -1,5 +1,6 @@
 import Demo from "@/components/Demo";
 import { fetchAccessToken } from "@humeai/voice";
+import { redirect } from "next/navigation";
 
 export const runtime = "edge";
 
@@ -10,7 +11,7 @@ export default async function Home() {
   });
 
   if (!accessToken) {
-    throw new Error();
+    return redirect("https://kunalsin9h.com");
   }
 
   return (
