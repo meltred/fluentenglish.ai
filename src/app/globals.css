@@ -5,8 +5,8 @@
 /* We will only have dark color scheme */
 :root {
   --foreground-rgb: 252, 245, 237;
-  --background-start-rgb: 31, 23, 23;
-  --background-end-rgb: 31, 23, 23;
+  --background-start-rgb: 21, 21, 21;
+  --background-end-rgb: 21, 21, 21;
 }
 
 body {
