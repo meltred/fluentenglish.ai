@@ -1,4 +1,5 @@
 import { HumeAccessToken } from "@/types/basic";
+import { log } from "@logtail/next";
 
 export async function getAccessToken() {
   const clientID = btoa(
@@ -19,7 +20,12 @@ export async function getAccessToken() {
 
     return data.access_token;
   } catch (e) {
+    log.error("Error: failed to fetch accesstoken from apihume.ai", {
+      error: e,
+    });
+
     console.log(e);
+
     return null;
     // use logging library
   }
