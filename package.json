@@ -9,9 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@humeai/voice": "^0.1.5",
-    "@humeai/voice-react": "^0.1.5",
     "@logtail/next": "^0.1.5",
+    "framer-motion": "^11.2.9",
     "next": "14.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
