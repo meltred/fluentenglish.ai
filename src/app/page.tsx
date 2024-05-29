@@ -23,6 +23,12 @@ export default async function Home() {
   } catch (e) {
     console.log(e);
 
-    return <p>Error: {JSON.stringify(e)}</p>;
+    return (
+      <p>
+        <p>API Key: {process.env.HUME_API_KEY}</p>
+        <p>Client Sec: {process.env.HUME_CLIENT_SECRET}</p>
+        Error: {JSON.stringify(e)}
+      </p>
+    );
   }
 }
