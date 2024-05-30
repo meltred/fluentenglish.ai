@@ -1,7 +1,7 @@
 import { DeepgramError, createClient } from "@deepgram/sdk";
 import { NextResponse, type NextRequest } from "next/server";
 
-export const revalidate = 0;
+export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
   // exit early so we don't request 70000000 keys while in devmode
