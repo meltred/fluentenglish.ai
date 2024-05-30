@@ -1,9 +1,9 @@
-import { TextAnimate } from "@/components/ui/text-animate";
+import App from "@/components/Home/App";
 
 export default async function Home() {
   return (
     <main className="container mx-auto flex h-screen items-center justify-center">
-      <TextAnimate text="FluentEnglish.AI" type="popIn" />
+      <App />
     </main>
   );
 }

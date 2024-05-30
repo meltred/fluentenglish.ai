@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   // in dev mode, just give existing api key
   if (process.env.DEEPGRAM_ENV !== "production") {
     return NextResponse.json({
-      key: process.env.DEEPGRAM_API_KEY ?? "",
+      key: process.env.DEEPGRAM_API_KEY_OWNER_SCOPE ?? "",
     });
   }
 
