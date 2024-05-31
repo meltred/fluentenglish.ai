@@ -11,20 +11,36 @@ import {
   MicrophoneState,
   useMicrophone,
 } from "@/context/MicrophoneContextProvider";
+import Groq from 'groq-sdk'
 import { useEffect, useRef, useState } from "react";
 import { TextAnimate } from "../ui/text-animate";
+const groq = new Groq({apiKey: {put your grok api key here}, dangerouslyAllowBrowser: true});
+
 
 export default function App() {
+  const [flag,setFlag]  = useState<boolean>(true)
   const [caption, setCatption] = useState<string | undefined>(
     "Start Speaking..."
   );
+  const process = async (thisCaption: string) => {
+    console.log(thisCaption ,"!_!")
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: thisCaption }],
+      model: 'mixtral-8x7b-32768',
+    })
+  
+    const ans = await chatCompletion.choices[0].message.content
+    ans === undefined ? setFlag(false) : setFlag(true)
+    console.log(ans)
+
+  }
   const { connection, connectToDeepgram, connectionState } = useDeepgram();
   const { microphone, setupMicrophone, startMicrophone, microphoneState } =
     useMicrophone();
 
   const captionTimeout = useRef<any>();
   const keepAliveInterval = useRef<any>();
-
+ 
   useEffect(() => {
     // start listening
     // this can also be done with user interaction
@@ -49,19 +65,23 @@ export default function App() {
     if (!connection) return;
 
     const onData = (e: BlobEvent) => {
-      connection.send(e.data);
+   
+        connection.send(e.data);
+    
     };
 
     const onTranscript = (data: LiveTranscriptionEvent) => {
       const { is_final: isFinal, speech_final: speechFinal } = data;
       const thisCaption = data.channel.alternatives[0].transcript;
-
+      if(flag===true && isFinal){
+        process(thisCaption)
+      }
       console.log(thisCaption);
       setCatption(thisCaption);
 
       if (isFinal && speechFinal) {
         clearTimeout(captionTimeout.current);
-
+        
         captionTimeout.current = setTimeout(() => {
           setCatption(undefined);
           clearTimeout(captionTimeout.current);
@@ -70,9 +90,10 @@ export default function App() {
     };
 
     if (connectionState === LiveConnectionState.OPEN) {
+  
       connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
       microphone.addEventListener(MicrophoneEvents.DataAvailable, onData);
-
+      
       startMicrophone();
     }
 
