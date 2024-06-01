@@ -69,6 +69,7 @@ export default function App() {
   }, [microphoneState]);
 
   useEffect(() => {
+    const xyz = document.getElementById("xyz");
     if (!microphone) return;
     if (!connection) return;
 
@@ -85,6 +86,10 @@ export default function App() {
       }
 
       if (isFinal && speechFinal) {
+        const li = document.createElement("li");
+        li.innerText = thisCaption;
+        xyz?.appendChild(li);
+
         clearTimeout(captionTimeout.current);
 
         captionTimeout.current = setTimeout(() => {
@@ -134,6 +139,10 @@ export default function App() {
   }, [microphoneState, connectionState]);
 
   return (
-    <div>{caption ? <TextAnimate text={caption} type="calmInUp" /> : null}</div>
+    <div>
+      <div>
+        {caption ? <TextAnimate text={caption} type="calmInUp" /> : null}
+      </div>
+    </div>
   );
 }
