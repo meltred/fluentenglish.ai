@@ -11,37 +11,36 @@ import {
   MicrophoneState,
   useMicrophone,
 } from "@/context/MicrophoneContextProvider";
-import Groq from "groq-sdk";
+// import Groq from "groq-sdk";
 import { useEffect, useRef, useState } from "react";
 import { TextAnimate } from "../ui/text-animate";
 
-const groq = new Groq({
-  apiKey: "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",
-  dangerouslyAllowBrowser: true,
-});
+// const groq = new Groq({
+//   apiKey: "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",
+//   dangerouslyAllowBrowser: true,
+// });
 
 export default function App() {
-  const [flag, setFlag] = useState<boolean>(true);
   const [caption, setCatption] = useState<string | undefined>(
     "Start Speaking..."
   );
 
-  const process = async (thisCaption: string) => {
-    console.log(caption);
-    console.log(caption?.trim().length);
-    return;
-    if (caption?.trim().length === 0) {
-      return;
-    }
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "user", content: thisCaption }],
-      model: "mixtral-8x7b-32768",
-    });
+  // const process = async (thisCaption: string) => {
+  //   console.log(caption);
+  //   console.log(caption?.trim().length);
+  //   return;
+  //   if (caption?.trim().length === 0) {
+  //     return;
+  //   }
+  //   const chatCompletion = await groq.chat.completions.create({
+  //     messages: [{ role: "user", content: thisCaption }],
+  //     model: "mixtral-8x7b-32768",
+  //   });
 
-    const ans = await chatCompletion.choices[0].message.content;
-    ans === undefined ? setFlag(false) : setFlag(true);
-    console.log("-> " + ans);
-  };
+  //   const ans = await chatCompletion.choices[0].message.content;
+  //   ans === undefined ? setFlag(false) : setFlag(true);
+  //   console.log("-> " + ans);
+  // };
 
   const { connection, connectToDeepgram, connectionState } = useDeepgram();
   const { microphone, setupMicrophone, startMicrophone, microphoneState } =
@@ -81,9 +80,9 @@ export default function App() {
       const { is_final: isFinal, speech_final: speechFinal } = data;
       const thisCaption = data.channel.alternatives[0].transcript;
 
-      console.log(isFinal);
-      console.log(thisCaption);
-      setCatption(thisCaption);
+      if (thisCaption.trim().length !== 0) {
+        setCatption(thisCaption);
+      }
 
       if (isFinal && speechFinal) {
         clearTimeout(captionTimeout.current);
@@ -135,7 +134,6 @@ export default function App() {
   }, [microphoneState, connectionState]);
 
   return (
-    // <div>{caption ? <TextAnimate text={caption} type="popIn" /> : null}</div>
-    <div>{caption}</div>
+    <div>{caption ? <TextAnimate text={caption} type="calmInUp" /> : null}</div>
   );
 }
