@@ -10,9 +10,6 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // since api key can not be pulic, we have to invalidate it every 60 second
-  const url = request.url;
-
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY_OWNER_SCOPE ?? "");
 
   let { result: projectsResult, error: projectsError } =
@@ -44,7 +41,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(newKeyError);
   }
 
-  const response = NextResponse.json({ ...newKeyResult, url });
+  const response = NextResponse.json({ ...newKeyResult });
   response.headers.set("Surrogate-Control", "no-store");
   response.headers.set(
     "Cache-Control",

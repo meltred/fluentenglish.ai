@@ -34,9 +34,11 @@ interface DeepgramContextProviderProps {
 }
 
 const getApiKey = async (): Promise<string> => {
-  const response = await fetch("/api/auth", { cache: "no-cache" , next: { revalidate: 0 }});
+  const response = await fetch("/api/auth", {
+    cache: "no-cache",
+    next: { revalidate: 0 },
+  });
   const result = await response.json();
-  console.log(result)
   return result.key;
 };
 
@@ -57,7 +59,6 @@ const DeepgramContextProvider: FunctionComponent<
    */
   const connectToDeepgram = async (options: LiveSchema, endpoint?: string) => {
     const key = await getApiKey();
-    console.log(key)
     if (key.length === 0) {
       console.log("Key is empty");
       log.error("API key for live transcription is empty.");
