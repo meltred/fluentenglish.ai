@@ -14,6 +14,12 @@ import {
 // import Groq from "groq-sdk";
 import { useEffect, useRef, useState } from "react";
 import { TextAnimate } from "../ui/text-animate";
+import { Message, continueConversation } from "../../app/actions";
+import { readStreamableValue } from "ai/rsc";
+
+// Force the page to be dynamic and allow streaming responses up to 30 seconds
+export const dynamic = "force-dynamic";
+export const maxDuration = 30 * 60 * 60;
 
 // const groq = new Groq({
 //   apiKey: "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",
@@ -21,32 +27,13 @@ import { TextAnimate } from "../ui/text-animate";
 // });
 
 export default function App() {
-  const [caption, setCatption] = useState<string | undefined>(
-    "Start Speaking..."
-  );
-
-  // const process = async (thisCaption: string) => {
-  //   console.log(caption);
-  //   console.log(caption?.trim().length);
-  //   return;
-  //   if (caption?.trim().length === 0) {
-  //     return;
-  //   }
-  //   const chatCompletion = await groq.chat.completions.create({
-  //     messages: [{ role: "user", content: thisCaption }],
-  //     model: "mixtral-8x7b-32768",
-  //   });
-
-  //   const ans = await chatCompletion.choices[0].message.content;
-  //   ans === undefined ? setFlag(false) : setFlag(true);
-  //   console.log("-> " + ans);
-  // };
+  const [caption, setCaption] = useState("Start Speaking...");
+  const [conversation, setConversation] = useState<Message[]>([]);
 
   const { connection, connectToDeepgram, connectionState } = useDeepgram();
   const { microphone, setupMicrophone, startMicrophone, microphoneState } =
     useMicrophone();
 
-  const captionTimeout = useRef<any>();
   const keepAliveInterval = useRef<any>();
 
   useEffect(() => {
@@ -69,7 +56,8 @@ export default function App() {
   }, [microphoneState]);
 
   useEffect(() => {
-    const xyz = document.getElementById("xyz");
+    const previousTrans = document.getElementById("previousTrans");
+
     if (!microphone) return;
     if (!connection) return;
 
@@ -77,25 +65,45 @@ export default function App() {
       connection.send(e.data);
     };
 
-    const onTranscript = (data: LiveTranscriptionEvent) => {
+    const onTranscript = async (data: LiveTranscriptionEvent) => {
       const { is_final: isFinal, speech_final: speechFinal } = data;
       const thisCaption = data.channel.alternatives[0].transcript;
 
       if (thisCaption.trim().length !== 0) {
-        setCatption(thisCaption);
+        setCaption(thisCaption);
       }
 
       if (isFinal && speechFinal) {
-        const li = document.createElement("li");
-        li.innerText = thisCaption;
-        xyz?.appendChild(li);
+        if (previousTrans) {
+          previousTrans.appendChild(getUserTrans(" " + thisCaption));
 
-        clearTimeout(captionTimeout.current);
+          if (previousTrans.innerText.length !== 0) {
+            setCaption("");
+          }
+        }
 
-        captionTimeout.current = setTimeout(() => {
-          setCatption(undefined);
-          clearTimeout(captionTimeout.current);
-        }, 3000);
+        if (thisCaption.trim().length !== 0) {
+          const { messages, newMessage } = await continueConversation([
+            ...conversation,
+            { role: "user", content: thisCaption },
+          ]);
+
+          let textContent = "";
+          const conversationHistory: Message[] = [];
+
+          for await (const delta of readStreamableValue(newMessage)) {
+            textContent = `${textContent}${delta}`;
+
+            conversationHistory.push({
+              role: "assistant",
+              content: textContent,
+            });
+          }
+
+          setConversation(conversationHistory);
+
+          previousTrans?.appendChild(getAITrans(textContent));
+        }
       }
     };
 
@@ -112,8 +120,6 @@ export default function App() {
         onTranscript
       );
       microphone.removeEventListener(MicrophoneEvents.DataAvailable, onData);
-
-      clearTimeout(captionTimeout.current);
     };
   }, [connectionState]);
 
@@ -141,8 +147,27 @@ export default function App() {
   return (
     <div>
       <div>
-        {caption ? <TextAnimate text={caption} type="calmInUp" /> : null}
+        <div
+          className="text-md md:text-xl lg:text-2xl p-1 font-black text-black dark:text-neutral-100 opacity-80 flex flex-col gap-1"
+          id="previousTrans"
+        ></div>
+        <div className="p-1">
+          <TextAnimate text={caption} type="calmInUp" />
+        </div>
       </div>
     </div>
   );
+}
+
+function getUserTrans(text: string) {
+  const p = document.createElement("p");
+  p.innerText = text;
+  return p;
+}
+
+function getAITrans(text: string) {
+  const p = document.createElement("p");
+  p.innerText = text;
+  p.classList.add(...["text-pink-400", "opacity-80"]);
+  return p;
 }
