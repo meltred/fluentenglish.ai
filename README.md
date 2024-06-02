@@ -3,7 +3,7 @@
     <h2>FluentEnglish.ai</h2>
 </div>
 
-FluentEnglish.ai - An AI native app for non-native english learners.
+FluentEnglish.ai - An AI native app for non-native english speakers.
 
 ### Devlopment
 

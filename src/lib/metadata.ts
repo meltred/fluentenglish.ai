@@ -5,7 +5,7 @@ export function getMetadata(): Metadata {
     title: { default: "FluentEnglish.AI", template: "%s • FluentEnglish.AI" },
     creator: "Meltred Pvt Ltd.",
     publisher: "Meltred Pvt Ltd.",
-    description: "An AI native application for non-native English learners.",
+    description: "An AI native application for non-native English speakers.",
     keywords: [
       "ai",
       "fluent english",
@@ -23,12 +23,12 @@ export function getMetadata(): Metadata {
     authors: [{ name: "Meltred Pvt Ltd.", url: "https://meltred.com" }],
     openGraph: {
       title: "FluentEnglish.AI",
-      description: "An AI native application for non-native English learners.",
+      description: "An AI native application for non-native English speakers.",
       url: "https://FluentEnglish.ai",
       siteName: "FluentEnglish.AI",
       images: [
         {
-          url: "https://i.imgur.com/ircGJBP.jpeg",
+          url: "https://i.imgur.com/gCipvsA.jpeg",
           width: 1200,
           height: 630,
         },
@@ -55,12 +55,12 @@ export function getMetadata(): Metadata {
     twitter: {
       card: "summary_large_image",
       title: "FluentEnglish.AI",
-      description: "An AI native application for non-native English learners.",
+      description: "An AI native application for non-native English speakers.",
       siteId: "fluentenglish_ai",
       creator: "@fluentenglish_ai",
       creatorId: "fluentenglish_ai",
       images: {
-        url: "https://i.imgur.com/ircGJBP.jpeg",
+        url: "https://i.imgur.com/gCipvsA.jpeg",
         alt: "A gradient background website description written at the bottom left",
       },
     },
