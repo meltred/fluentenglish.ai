@@ -12,7 +12,6 @@ export interface Message {
 
 export async function continueConversation(history: Message[]) {
   "use server";
-  console.log(history);
 
   const stream = createStreamableValue();
 

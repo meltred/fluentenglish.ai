@@ -19,12 +19,7 @@ import { readStreamableValue } from "ai/rsc";
 
 // Force the page to be dynamic and allow streaming responses up to 30 seconds
 export const dynamic = "force-dynamic";
-export const maxDuration = 30 * 60 * 60;
-
-// const groq = new Groq({
-//   apiKey: "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",
-//   dangerouslyAllowBrowser: true,
-// });
+export const maxDuration = 30;
 
 export default function App() {
   const [caption, setCaption] = useState("Start Speaking...");
@@ -37,9 +32,6 @@ export default function App() {
   const keepAliveInterval = useRef<any>();
 
   useEffect(() => {
-    // start listening
-    // this can also be done with user interaction
-    // like clicking button
     setupMicrophone();
   }, []);
 
@@ -57,6 +49,7 @@ export default function App() {
 
   useEffect(() => {
     const previousTrans = document.getElementById("previousTrans");
+    const bottom = document.getElementById("bottom");
 
     if (!microphone) return;
     if (!connection) return;
@@ -74,7 +67,7 @@ export default function App() {
       }
 
       if (isFinal && speechFinal) {
-        if (previousTrans) {
+        if (previousTrans && thisCaption.trim().length !== 0) {
           previousTrans.appendChild(getUserTrans(" " + thisCaption));
 
           if (previousTrans.innerText.length !== 0) {
@@ -100,7 +93,7 @@ export default function App() {
             });
           }
 
-          setConversation(conversationHistory);
+          setConversation([...messages, ...conversationHistory]);
 
           previousTrans?.appendChild(getAITrans(textContent));
         }
@@ -111,8 +104,12 @@ export default function App() {
       connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
       microphone.addEventListener(MicrophoneEvents.DataAvailable, onData);
 
-      startMicrophone();
+      if (conversation.length === 0) {
+        startMicrophone();
+      }
     }
+
+    bottom?.scrollIntoView();
 
     return () => {
       connection.removeListener(
@@ -121,7 +118,7 @@ export default function App() {
       );
       microphone.removeEventListener(MicrophoneEvents.DataAvailable, onData);
     };
-  }, [connectionState]);
+  }, [connectionState, conversation]);
 
   useEffect(() => {
     if (!connection) return;
@@ -151,10 +148,10 @@ export default function App() {
           className="text-md md:text-xl lg:text-2xl p-1 font-black text-black dark:text-neutral-100 opacity-80 flex flex-col gap-1"
           id="previousTrans"
         ></div>
-        <div className="p-1">
-          <TextAnimate text={caption} type="calmInUp" />
-        </div>
+        <TextAnimate text={caption} type="calmInUp" />
       </div>
+
+      <div id="bottom" className="mb-4"></div>
     </div>
   );
 }
