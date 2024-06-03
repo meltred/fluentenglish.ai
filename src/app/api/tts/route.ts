@@ -4,7 +4,7 @@ import axios from 'axios';
 export async function POST(req, res) {
   const { text } = await req.json(); // Use req.json() to parse the request body
   const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY_OWNER_SCOPE
-  const MODEL_NAME = 'alpha-stella-en-v2'; // Example model name
+  const MODEL_NAME = 'aura-helios-en'; // Example model name
 
   const DEEPGRAM_URL = `https://api.deepgram.com/v1/speak?model=${MODEL_NAME}&performance=some&encoding=linear16&sample_rate=24000`; 
 
