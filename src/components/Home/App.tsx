@@ -15,12 +15,14 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { TextAnimate } from "../ui/text-animate";
 import { Message, continueConversation } from "../../app/actions";
-import { readStreamableValue } from "ai/rsc";
+import axios from 'axios';
 
 // Force the page to be dynamic and allow streaming responses up to 30 seconds
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
+const MODEL_NAME = 'alpha-stella-en-v2'; // Example model name
 
+const DEEPGRAM_URL = `https://api.beta.deepgram.com/v1/speak?model=${MODEL_NAME}&performance=some&encoding=linear16&sample_rate=24000`;
 export default function App() {
   const [caption, setCaption] = useState("Start Speaking...");
   const [conversation, setConversation] = useState<Message[]>([]);
@@ -140,7 +142,22 @@ export default function App() {
       clearTimeout(keepAliveInterval.current);
     };
   }, [microphoneState, connectionState]);
+  const [text, setText] = useState('here we go again');
+  const [audioSrc, setAudioSrc] = useState(null);
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await axios.post('/api/tts/', { text });
+      const audioUrl = URL.createObjectURL(new Blob([response.data]));
+      setAudioSrc(audioUrl);
+    } catch (error) {
+      console.error('Error converting text to speech:', error);
+    }
+  };
+
+  
   return (
     <div>
       <div>
@@ -150,6 +167,25 @@ export default function App() {
         ></div>
         <TextAnimate text={caption} type="calmInUp" />
       </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Enter text here"
+          style={{ width: '300px', height: '100px', marginBottom: '20px' }}
+        />
+        <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#007BFF', color: 'white', border: 'none', cursor: 'pointer' }}>
+          Convert to Speech
+        </button>
+      </form>
+      {audioSrc && (
+        <audio controls style={{ display: 'block', marginTop: '20px' }}>
+          <source src={audioSrc} type="audio/wav" />
+          does not support the audio element.
+        </audio>
+      )}
+    </div>
 
       <div id="bottom" className="mb-4"></div>
     </div>
