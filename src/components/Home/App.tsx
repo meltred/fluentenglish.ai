@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { TextAnimate } from "../ui/text-animate";
 import { Message, continueConversation } from "../../app/actions";
+import { readStreamableValue } from "ai/rsc";
 import axios from 'axios';
 
 // Force the page to be dynamic and allow streaming responses up to 30 seconds
