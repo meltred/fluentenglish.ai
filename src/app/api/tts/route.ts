@@ -1,27 +1,65 @@
 import axios from 'axios';
+import { NextRequest, NextResponse } from 'next/server';
+const { createClient } = require("@deepgram/sdk");
+const fs = require("fs");
 
+const getAudioBuffer = async (response) => {
+  const reader = response.getReader();
+  const chunks = [];
 
-export async function POST(req, res) {
-  const { text } = await req.json(); // Use req.json() to parse the request body
-  const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY_OWNER_SCOPE
-  const MODEL_NAME = 'aura-helios-en'; // Example model name
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
 
-  const DEEPGRAM_URL = `https://api.deepgram.com/v1/speak?model=${MODEL_NAME}&performance=some&encoding=linear16&sample_rate=24000`; 
+    chunks.push(value);
+  }
 
-  //try {
-    const response = await axios.post(DEEPGRAM_URL, { text, voice: MODEL_NAME }, {//read more about it
-      headers: {
-        'Authorization': `Token ${DEEPGRAM_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      responseType: 'arraybuffer', // Important for receiving audio data as a binary stream
+  const dataArray = chunks.reduce(
+    (acc, chunk) => Uint8Array.from([...acc, ...chunk]),
+    new Uint8Array(0)
+  );
+
+  return Buffer.from(dataArray.buffer);
+};
+
+export async function POST(req: NextRequest, res: NextResponse) {
+  try {
+    const body = await req.json(); // Parse the JSON body
+    const text = body.text; // Extract the text from the parsed body
+
+    console.log(text); // Log the text to the console
+    const deepgram = createClient(process.env.DEEPGRAM_API_KEY_OWNER_SCOPE);
+  const response = await deepgram.speak.request(
+    { text },
+    {
+      model: "aura-asteria-en",
+      encoding: "linear16",
+      container: "wav",
+    }
+  );
+
+  const stream = await response.getStream();
+  const headers = await response.getHeaders();
+  if (stream) {
+    const buffer = await getAudioBuffer(stream);
+    fs.writeFile("output.wav", buffer, (err) => {
+      if (err) {
+        console.error("Error writing audio to file:", err);
+      } else {
+        console.log("Audio file written to output.wav");
+      }
     });
-    console.log(response)
-    res.setHeader('Content-Type', 'audio/wav');
-    return response.data
+  } else {
+    console.error("Error generating audio:", stream);
+  }
 
-  //} catch (error) {
-   // console.error('Error:', error.response ? error.response.data : error.message);
-   // res.status(500).json({ message: 'Internal Server Error' });
- // }
+  if (headers) {
+    console.log("Headers:", headers);
+  }
+
+    return NextResponse.json({ message: 'Text received successfully' });
+  } catch (error) {
+    console.error('Error:', error);
+    return NextResponse.error(); // Return a generic error response
+  }
 }

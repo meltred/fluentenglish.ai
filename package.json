@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^0.0.17",
-    "@deepgram/sdk": "^3.3.3",
+    "@deepgram/sdk": "^3.3.4",
     "@logtail/next": "^0.1.5",
-    "ai": "^3.1.28",
+    "ai": "^3.1.30",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.10",
     "groq-sdk": "^0.4.0",

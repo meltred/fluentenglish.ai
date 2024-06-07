@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import { TextAnimate } from "../ui/text-animate";
 import { Message, continueConversation } from "../../app/actions";
 import { readStreamableValue } from "ai/rsc";
-import axios from 'axios';
+
 
 // Force the page to be dynamic and allow streaming responses up to 30 seconds
 export const dynamic = "force-dynamic";
@@ -143,18 +143,28 @@ export default function App() {
       clearTimeout(keepAliveInterval.current);
     };
   }, [microphoneState, connectionState]);
-  const [text, setText] = useState('here we go again');
+  const [text, setText] = useState('Hello ask anything');
   const [audioSrc, setAudioSrc] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      const response = await axios.post('/api/tts/', { text });
-      const audioUrl = URL.createObjectURL(new Blob([response.data]));
-      setAudioSrc(audioUrl);
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({text}),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data); // Log the response from the server
     } catch (error) {
-      console.error('Error converting text to speech:', error);
+      console.error('Error sending text:', error);
     }
   };
 
