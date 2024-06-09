@@ -145,7 +145,7 @@ export default function App() {
       clearTimeout(keepAliveInterval.current);
     };
   }, [microphoneState, connectionState]);
-  const audioPlayerRef = useRef(null);
+  const audioPlayerRef = useRef<HTMLAudioElement>(null);
 
   const handleSubmit = (texts?: string) => {
     console.log(texts)
@@ -176,13 +176,12 @@ export default function App() {
 
         // Play the audio URL
         const audioPlayer = audioPlayerRef.current;
-        audioPlayer.src = audioUrl;
-        audioPlayer.play();
-
-        audioPlayer.addEventListener("ended", () => {
-
-        });
+        if (audioPlayer) {
+          audioPlayer.src = audioUrl;
+          audioPlayer.play();
+        }
       })
+
       .catch((error) => {
         console.error("Error fetching audio:", error);
 
