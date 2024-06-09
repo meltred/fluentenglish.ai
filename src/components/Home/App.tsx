@@ -27,7 +27,7 @@ const DEEPGRAM_URL = `https://api.beta.deepgram.com/v1/speak?model=${MODEL_NAME}
 export default function App() {
   const [caption, setCaption] = useState("Start Speaking...");
   const [conversation, setConversation] = useState<Message[]>([]);
-
+  const [text, setText] = useState("");
   const { connection, connectToDeepgram, connectionState } = useDeepgram();
   const { microphone, setupMicrophone, startMicrophone, microphoneState } =
     useMicrophone();
@@ -89,16 +89,18 @@ export default function App() {
 
           for await (const delta of readStreamableValue(newMessage)) {
             textContent = `${textContent}${delta}`;
-
+            
             conversationHistory.push({
               role: "assistant",
               content: textContent,
             });
           }
-
+          
           setConversation([...messages, ...conversationHistory]);
-
+          
           previousTrans?.appendChild(getAITrans(textContent));
+          handleSubmit(textContent)
+          
         }
       }
     };
@@ -143,29 +145,49 @@ export default function App() {
       clearTimeout(keepAliveInterval.current);
     };
   }, [microphoneState, connectionState]);
-  const [text, setText] = useState('Hello ask anything');
-  const [audioSrc, setAudioSrc] = useState(null);
+  const audioPlayerRef = useRef(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({text}),
+  const handleSubmit = (texts?: string) => {
+    console.log(texts)
+    const data = {
+      model: "aura-asteria-en",
+      text: texts,
+    };
+
+    fetch("https://tts.nevernever.me/api", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+      
+
+        // Create a Blob from the response data
+        return response.blob();
+      })
+      .then((blob) => {
+        // Create an object URL from the Blob
+        const audioUrl = URL.createObjectURL(blob);
+
+        // Play the audio URL
+        const audioPlayer = audioPlayerRef.current;
+        audioPlayer.src = audioUrl;
+        audioPlayer.play();
+
+        audioPlayer.addEventListener("ended", () => {
+
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching audio:", error);
+
       });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log(data); // Log the response from the server
-    } catch (error) {
-      console.error('Error sending text:', error);
-    }
+  
   };
 
   
@@ -178,26 +200,7 @@ export default function App() {
         ></div>
         <TextAnimate text={caption} type="calmInUp" />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Enter text here"
-          style={{ width: '300px', height: '100px', marginBottom: '20px' }}
-        />
-        <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#007BFF', color: 'white', border: 'none', cursor: 'pointer' }}>
-          Convert to Speech
-        </button>
-      </form>
-      {audioSrc && (
-        <audio controls style={{ display: 'block', marginTop: '20px' }}>
-          <source src={audioSrc} type="audio/wav" />
-          does not support the audio element.
-        </audio>
-      )}
-    </div>
-
+      <audio id="audio-player" ref={audioPlayerRef}></audio>
       <div id="bottom" className="mb-4"></div>
     </div>
   );
